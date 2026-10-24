@@ -1,68 +1,57 @@
-import { LayoutTemplate, Building2, Zap, LayoutDashboard } from 'lucide-react';
-import { SectionHeading } from '~/components/ui/SectionHeading';
+'use client';
 
-const services = [
-  {
-    icon: LayoutTemplate,
-    title: 'Landing Pages',
-    description:
-      'High-conversion single pages designed to turn traffic into leads, sign-ups, or sales. Every element serves a purpose.',
-    accent: '#c9a84c',
-  },
-  {
-    icon: Building2,
-    title: 'Business Websites',
-    description:
-      'Professional multi-page sites for service businesses and startups that need to establish credibility fast.',
-    accent: '#3b9e8c',
-  },
-  {
-    icon: Zap,
-    title: 'SaaS Websites',
-    description:
-      'Marketing sites built for software products — clearly communicating value, features, and pricing to the right audience.',
-    accent: '#6366f1',
-  },
-  {
-    icon: LayoutDashboard,
-    title: 'Dashboards & Web Interfaces',
-    description:
-      'Clean, usable frontend implementations for data-heavy applications, internal tools, and web app MVPs.',
-    accent: '#f59e0b',
-  },
-];
+import { Building2, LayoutDashboard, LayoutTemplate, Rocket, type LucideIcon } from 'lucide-react';
+import { Badge } from '~/components/ui/Badge';
+import { Reveal } from '~/components/ui/Reveal';
+import { SectionHeading } from '~/components/ui/SectionHeading';
+import { useLanguage } from '~/lib/i18n/LanguageProvider';
+
+const icons: LucideIcon[] = [LayoutTemplate, Building2, Rocket, LayoutDashboard];
 
 export function Services() {
+  const { t } = useLanguage();
+
   return (
     <section id="services" className="section">
-      <div className="container">
-        <SectionHeading
-          eyebrow="Services"
-          title="What we build"
-          subtitle="Four focused disciplines. Each delivered with the same commitment to clarity, craft, and conversion."
-        />
+      <div className="wrap">
+        <Reveal>
+          <SectionHeading index="01" eyebrow={t.services.eyebrow} title={t.services.title} subtitle={t.services.subtitle} />
+        </Reveal>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-5">
-          {services.map((svc) => {
-            const Icon = svc.icon;
+        <ol className="mt-16 border-b border-line">
+          {t.services.items.map((item, i) => {
+            const Icon = icons[i];
             return (
-              <div
-                key={svc.title}
-                className="card p-7 group"
-                style={{ '--accent': svc.accent } as React.CSSProperties}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 transition-all duration-300 group-hover:scale-110"
-                  style={{ background: `${svc.accent}18`, border: `1px solid ${svc.accent}30` }}
-                >
-                  <Icon size={18} style={{ color: svc.accent }} />
-                </div>
-                <h3 className="text-base font-semibold text-cream-50 mb-2.5">{svc.title}</h3>
-                <p className="text-sm text-cream-200/55 leading-relaxed">{svc.description}</p>
-              </div>
+              <li key={item.title}>
+                <Reveal delay={i * 60}>
+                  <article className="group grid grid-cols-1 gap-6 border-t border-line py-9 md:grid-cols-12 md:gap-8 md:py-11">
+                    <div className="flex items-center gap-4 md:col-span-1 md:flex-col md:items-start">
+                      <span className="font-mono text-sm text-accent">{String(i + 1).padStart(2, '0')}</span>
+                      <Icon size={18} aria-hidden="true" className="text-muted transition-colors group-hover:text-ink" />
+                    </div>
+                    <h3 className="font-display text-3xl leading-tight tracking-tight text-ink md:col-span-5 md:text-4xl">
+                      {item.title}
+                    </h3>
+                    <div className="md:col-span-6">
+                      <p className="text-base leading-relaxed text-muted">{item.description}</p>
+                      <p className="mt-5 text-sm text-ink/80">
+                        <span className="label mr-2">{t.services.forLabel}</span>
+                        {item.forWhom}
+                      </p>
+                      <ul className="mt-5 flex flex-wrap gap-2">
+                        {item.deliverables.map((d) => (
+                          <li key={d}>
+                            <Badge>{d}</Badge>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </article>
+                </Reveal>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </div>
     </section>
   );

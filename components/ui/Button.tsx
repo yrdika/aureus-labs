@@ -1,49 +1,63 @@
-import { type AnchorHTMLAttributes, type ButtonHTMLAttributes } from 'react';
+import Link from 'next/link';
 import { cn } from '~/lib/utils';
 
-type ButtonVariant = 'primary' | 'outline' | 'ghost';
-type ButtonSize = 'sm' | 'md' | 'lg';
+type Variant = 'primary' | 'outline' | 'ghost';
+type Size = 'sm' | 'md' | 'lg';
+
+const variants: Record<Variant, string> = {
+  primary: 'bg-accent text-on-accent hover:brightness-110 active:brightness-95',
+  outline: 'border border-ink/25 text-ink hover:border-ink hover:bg-ink/5',
+  ghost: 'text-muted hover:text-ink',
+};
+
+const sizes: Record<Size, string> = {
+  sm: 'h-9 px-4 text-sm',
+  md: 'h-11 px-6 text-sm',
+  lg: 'h-12 px-7 text-[0.95rem]',
+};
 
 interface ButtonBaseProps {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+  variant?: Variant;
+  size?: Size;
   className?: string;
+  children: React.ReactNode;
 }
 
-type ButtonAsButton = ButtonBaseProps &
-  ButtonHTMLAttributes<HTMLButtonElement> & { as?: 'button'; href?: never };
+type ButtonProps = ButtonBaseProps &
+  (
+    | ({ href: string } & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'className' | 'children'>)
+    | ({ href?: undefined } & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className' | 'children'>)
+  );
 
-type ButtonAsAnchor = ButtonBaseProps &
-  AnchorHTMLAttributes<HTMLAnchorElement> & { as: 'a'; href: string };
+export function Button(props: ButtonProps) {
+  const { variant = 'primary', size = 'md', className, children, ...rest } = props;
+  const classes = cn(
+    'inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-200 select-none',
+    'disabled:cursor-not-allowed disabled:opacity-60',
+    variants[variant],
+    sizes[size],
+    className,
+  );
 
-type ButtonProps = ButtonAsButton | ButtonAsAnchor;
-
-const variants: Record<ButtonVariant, string> = {
-  primary:
-    'bg-gold-500 text-charcoal-900 font-semibold hover:bg-gold-400 shadow-[0_0_20px_rgba(201,168,76,0.25)] hover:shadow-[0_0_30px_rgba(201,168,76,0.4)]',
-  outline:
-    'border border-white/20 text-cream-100 hover:border-gold-500/60 hover:text-gold-400 bg-transparent',
-  ghost:
-    'text-cream-200 hover:text-cream-50 bg-transparent hover:bg-white/6',
-};
-
-const sizes: Record<ButtonSize, string> = {
-  sm: 'px-4 py-2 text-sm rounded-lg gap-1.5',
-  md: 'px-6 py-3 text-sm rounded-xl gap-2',
-  lg: 'px-8 py-4 text-base rounded-xl gap-2.5',
-};
-
-export function Button({ variant = 'primary', size = 'md', className, ...props }: ButtonProps) {
-  const base =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 cursor-pointer select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/50 active:scale-[0.98]';
-
-  const classes = cn(base, variants[variant], sizes[size], className);
-
-  if (props.as === 'a') {
-    const { as: _as, ...anchorProps } = props as ButtonAsAnchor;
-    return <a className={classes} {...anchorProps} />;
+  if (typeof rest.href === 'string') {
+    const { href, ...anchorRest } = rest;
+    if (href.startsWith('/')) {
+      return (
+        <Link href={href} className={classes} {...anchorRest}>
+          {children}
+        </Link>
+      );
+    }
+    return (
+      <a href={href} className={classes} {...anchorRest}>
+        {children}
+      </a>
+    );
   }
 
-  const { as: _as, ...buttonProps } = props as ButtonAsButton;
-  return <button className={classes} {...buttonProps} />;
+  return (
+    <button className={classes} {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
+      {children}
+    </button>
+  );
 }

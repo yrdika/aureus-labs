@@ -2,23 +2,23 @@ import { cn } from '~/lib/utils';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'default' | 'gold' | 'outline';
+  variant?: 'default' | 'accent' | 'outline';
   className?: string;
 }
 
 const variants = {
-  default: 'bg-white/8 text-cream-200 border-white/12',
-  gold: 'bg-gold-500/10 text-gold-400 border-gold-500/30',
-  outline: 'bg-transparent text-cream-200/60 border-white/12',
+  default: 'bg-surface-2 text-ink',
+  accent: 'bg-accent/12 text-accent border border-accent/30',
+  outline: 'border border-line text-muted',
 };
 
-export function Badge({ children, variant = 'default', className }: BadgeProps) {
+export function Badge({ children, variant = 'outline', className }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center px-2.5 py-0.5 rounded-full text-2xs font-medium border tracking-wide',
+        'inline-flex items-center rounded-full px-2.5 py-1 font-mono text-2xs font-medium uppercase tracking-wide',
         variants[variant],
-        className
+        className,
       )}
     >
       {children}

@@ -1,77 +1,71 @@
+'use client';
+
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
-
-const footerLinks = {
-  Studio: [
-    { label: 'Services', href: '/#services' },
-    { label: 'Work', href: '/work' },
-    { label: 'Process', href: '/#process' },
-    { label: 'About', href: '/#about' },
-  ],
-  Legal: [
-    { label: 'Privacy', href: '#' },
-    { label: 'Terms', href: '#' },
-  ],
-};
+import { Logo } from '~/components/ui/Logo';
+import { useLanguage } from '~/lib/i18n/LanguageProvider';
+import { SITE } from '~/lib/site';
 
 export function Footer() {
+  const { t } = useLanguage();
+
+  const studioLinks = [
+    { label: t.nav.services, href: '/#services' },
+    { label: t.nav.work, href: '/work' },
+    { label: t.nav.process, href: '/#process' },
+    { label: t.nav.about, href: '/#about' },
+  ];
+
   return (
-    <footer className="border-t border-white/8 bg-charcoal-950/80 px-6 md:px-8 py-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 pb-12">
-          {/* Brand */}
-          <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 w-fit">
-              <span className="w-7 h-7 rounded-lg bg-gold-500 flex items-center justify-center text-charcoal-900 font-bold text-sm">
-                A
-              </span>
-              <span className="font-semibold text-cream-50 text-base tracking-tight">
-                Aureus<span className="text-gold-500">Labs</span>
-              </span>
+    <footer className="relative z-10 overflow-hidden border-t border-line bg-surface">
+      <div className="wrap pb-10 pt-16">
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-12">
+          <div className="md:col-span-6">
+            <Link href="/" aria-label={t.a11y.brandHome} className="inline-block">
+              <Logo />
             </Link>
-            <p className="mt-4 text-sm text-cream-200/50 leading-relaxed max-w-xs">
-              Digital experiences, built with purpose. We help businesses communicate clearly and grow online.
-            </p>
-            <a
-              href="mailto:ramadika305@gmail.com"
-              className="mt-4 inline-flex items-center gap-2 text-sm text-gold-500/80 hover:text-gold-400 transition-colors"
-            >
-              <Mail size={14} />
-              ramadika305@gmail.com
-            </a>
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted">{t.footer.tagline}</p>
           </div>
 
-          {/* Links */}
-          {Object.entries(footerLinks).map(([group, links]) => (
-            <div key={group}>
-              <h3 className="text-2xs font-semibold tracking-widest2 uppercase text-cream-200/40 mb-4">
-                {group}
-              </h3>
-              <ul className="flex flex-col gap-2.5">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-cream-200/50 hover:text-cream-100 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <nav aria-label={t.a11y.footerNav} className="md:col-span-3">
+            <h2 className="label">{t.footer.studio}</h2>
+            <ul className="mt-5 flex flex-col gap-3">
+              {studioLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="text-sm text-ink/80 transition-colors hover:text-accent">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="md:col-span-3">
+            <h2 className="label">{t.footer.contact}</h2>
+            <a
+              href={`mailto:${SITE.email}`}
+              className="mt-5 inline-flex items-center gap-2 text-sm text-ink/80 transition-colors hover:text-accent"
+            >
+              <Mail size={14} aria-hidden="true" />
+              {SITE.email}
+            </a>
+          </div>
         </div>
 
-        <div className="pt-8 border-t border-white/8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-2xs text-cream-200/30 tracking-wide">
-            © {new Date().getFullYear()} Aureus Labs. All rights reserved.
+        <div className="mt-14 flex flex-col justify-between gap-3 border-t border-line pt-6 text-xs text-muted md:flex-row md:items-center">
+          <p>
+            © <span suppressHydrationWarning>{new Date().getFullYear()}</span> {SITE.name}. {t.footer.rights}
           </p>
-          <p className="text-2xs text-cream-200/30">
-            Digital Experiences, Built with Purpose.
-          </p>
+          <p>{t.footer.conceptNote}</p>
         </div>
       </div>
+
+      <p
+        aria-hidden="true"
+        className="pointer-events-none select-none whitespace-nowrap text-center font-display text-[22vw] leading-[0.78] tracking-tight text-ink/[0.045] md:text-[15rem]"
+      >
+        Aureus Labs
+      </p>
     </footer>
   );
 }

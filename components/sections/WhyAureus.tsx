@@ -1,66 +1,44 @@
-import { MessageSquare, Smartphone, Wrench, Gauge } from 'lucide-react';
-import { SectionHeading } from '~/components/ui/SectionHeading';
+'use client';
 
-const reasons = [
-  {
-    icon: MessageSquare,
-    title: 'Clear communication',
-    description:
-      'No jargon, no surprises. You get regular updates, honest timelines, and direct access throughout the project.',
-  },
-  {
-    icon: Smartphone,
-    title: 'Responsive by default',
-    description:
-      'Every layout is designed and tested across screen sizes. Mobile-first isn\'t a checkbox — it\'s the starting point.',
-  },
-  {
-    icon: Wrench,
-    title: 'Maintainable code',
-    description:
-      'Clean architecture means you can hand it to any developer later and they\'ll understand it. No lock-in, no black boxes.',
-  },
-  {
-    icon: Gauge,
-    title: 'Performance & usability',
-    description:
-      'Fast load times, good Lighthouse scores, and interfaces tested for real-world usability — not just pixel perfection.',
-  },
-];
+import { Gauge, MessageSquare, Smartphone, Wrench, type LucideIcon } from 'lucide-react';
+import { Reveal } from '~/components/ui/Reveal';
+import { SectionHeading } from '~/components/ui/SectionHeading';
+import { useLanguage } from '~/lib/i18n/LanguageProvider';
+
+const icons: LucideIcon[] = [MessageSquare, Smartphone, Wrench, Gauge];
 
 export function WhyAureus() {
+  const { t } = useLanguage();
+
   return (
-    <section id="about" className="section bg-charcoal-950/50">
-      <div className="container">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: heading */}
-          <div>
-            <SectionHeading
-              eyebrow="Why Aureus Labs"
-              title="Built for businesses that take quality seriously"
-              subtitle="We're a focused studio, not an agency of hundreds. That means every project gets real attention, not a handoff to a junior."
-              align="left"
-            />
-            <div className="mt-8 inline-flex items-center gap-3 px-5 py-3 rounded-xl border border-gold-500/20 bg-gold-500/6">
-              <div className="w-2 h-2 rounded-full bg-gold-500 animate-pulse" />
-              <span className="text-sm text-gold-400/80">Currently accepting new projects</span>
-            </div>
+    <section id="about" className="section">
+      <div className="wrap">
+        <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <Reveal>
+              <SectionHeading index="05" eyebrow={t.why.eyebrow} title={t.why.title} subtitle={t.why.subtitle} />
+              <p className="mt-10 inline-flex items-center gap-3 rounded-full border border-line bg-surface px-5 py-3 text-sm text-ink">
+                <span aria-hidden="true" className="h-2 w-2 rounded-full bg-accent animate-pulse-dot" />
+                {t.why.availability}
+              </p>
+            </Reveal>
           </div>
 
-          {/* Right: reasons grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {reasons.map((reason) => {
-              const Icon = reason.icon;
-              return (
-                <div key={reason.title} className="card p-5 flex flex-col gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                    <Icon size={14} className="text-gold-500" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-cream-50">{reason.title}</h3>
-                  <p className="text-sm text-cream-200/50 leading-relaxed">{reason.description}</p>
-                </div>
-              );
-            })}
+          <div className="lg:col-span-7">
+            <ul className="grid grid-cols-1 border-l border-t border-line sm:grid-cols-2">
+              {t.why.reasons.map((reason, i) => {
+                const Icon = icons[i];
+                return (
+                  <li key={reason.title} className="border-b border-r border-line">
+                    <Reveal delay={i * 70} className="h-full p-7 md:p-8">
+                      <Icon size={20} aria-hidden="true" className="text-accent" />
+                      <h3 className="mt-6 font-display text-2xl text-ink">{reason.title}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-muted">{reason.description}</p>
+                    </Reveal>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
       </div>

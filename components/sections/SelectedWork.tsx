@@ -1,72 +1,74 @@
+'use client';
+
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { SectionHeading } from '~/components/ui/SectionHeading';
 import { Badge } from '~/components/ui/Badge';
+import { ProjectMock } from '~/components/ui/Mockups';
+import { Reveal } from '~/components/ui/Reveal';
+import { SectionHeading } from '~/components/ui/SectionHeading';
 import { projects } from '~/data/projects';
+import { useLanguage } from '~/lib/i18n/LanguageProvider';
 
 export function SelectedWork() {
+  const { t } = useLanguage();
+
   return (
-    <section id="work" className="section bg-charcoal-950/50">
-      <div className="container">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
-          <SectionHeading
-            eyebrow="Selected Work"
-            title="Concept projects"
-            subtitle="Three original demos built to showcase what Aureus Labs delivers across different industries."
-            align="left"
-          />
-          <Link
-            href="/work"
-            className="flex-shrink-0 inline-flex items-center gap-2 text-sm text-gold-500 hover:text-gold-400 transition-colors font-medium"
-          >
-            View all work
-            <ArrowUpRight size={14} />
-          </Link>
+    <section id="work" className="section">
+      <div className="wrap">
+        <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
+          <Reveal>
+            <SectionHeading index="03" eyebrow={t.work.eyebrow} title={t.work.title} subtitle={t.work.subtitle} />
+          </Reveal>
+          <Reveal>
+            <Link
+              href="/work"
+              className="inline-flex shrink-0 items-center gap-2 border-b border-ink/30 pb-1 text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent"
+            >
+              {t.work.viewAll}
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </Reveal>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {projects.map((project) => (
-            <Link
-              key={project.slug}
-              href={project.demoHref}
-              className="card group flex flex-col overflow-hidden"
-            >
-              {/* Preview */}
-              <div
-                className={`h-44 bg-gradient-to-br ${project.previewBg} flex items-center justify-center relative overflow-hidden`}
-              >
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: `radial-gradient(circle at center, ${project.accentColor}20 0%, transparent 70%)` }}
-                />
-                <span
-                  className="text-2xs font-semibold tracking-widest2 uppercase px-3 py-1.5 rounded-full border"
-                  style={{ color: project.accentColor, borderColor: `${project.accentColor}40`, background: `${project.accentColor}12` }}
-                >
-                  {project.category}
-                </span>
-              </div>
-
-              {/* Content */}
-              <div className="p-5 flex flex-col gap-3 flex-1">
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="text-base font-semibold text-cream-50 leading-snug group-hover:text-gold-400 transition-colors">
-                    {project.title}
-                  </h3>
-                  <ArrowUpRight
-                    size={14}
-                    className="text-cream-200/30 group-hover:text-gold-500 transition-all duration-200 flex-shrink-0 mt-0.5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                  />
-                </div>
-                <p className="text-sm text-cream-200/50 leading-relaxed">{project.shortDescription}</p>
-                <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
-                  {project.tags.map((tag) => (
-                    <Badge key={tag} variant="outline">{tag}</Badge>
-                  ))}
-                </div>
-              </div>
-            </Link>
-          ))}
+        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {projects.map((project, i) => {
+            const copy = t.projects[project.slug];
+            return (
+              <Reveal key={project.slug} delay={i * 90}>
+                <Link href={project.demoHref} className="group flex h-full flex-col">
+                  <div className="relative overflow-hidden rounded-2xl border border-line bg-surface-2 p-5 pb-0 pt-8">
+                    <Badge variant="accent" className="absolute left-4 top-4">
+                      {t.work.badge}
+                    </Badge>
+                    <div className="translate-y-2 transition-transform duration-500 group-hover:translate-y-0">
+                      <ProjectMock slug={project.slug} className="rounded-b-none border-b-0" />
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col pt-5">
+                    <p className="label">{copy.category}</p>
+                    <div className="mt-2 flex items-start justify-between gap-3">
+                      <h3 className="font-display text-3xl leading-tight text-ink transition-colors group-hover:text-accent">
+                        {copy.title}
+                      </h3>
+                      <ArrowUpRight
+                        size={18}
+                        aria-hidden="true"
+                        className="mt-1.5 shrink-0 text-muted transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+                      />
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-muted">{copy.short}</p>
+                    <ul className="mt-5 flex flex-wrap gap-2">
+                      {project.tags.map((tag) => (
+                        <li key={tag}>
+                          <Badge>{tag}</Badge>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Link>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

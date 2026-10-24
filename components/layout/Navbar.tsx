@@ -1,56 +1,67 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
+import { LanguageSwitcher } from '~/components/ui/LanguageSwitcher';
+import { Logo } from '~/components/ui/Logo';
+import { ThemeToggle } from '~/components/ui/ThemeToggle';
+import { useLanguage } from '~/lib/i18n/LanguageProvider';
+import { SITE } from '~/lib/site';
 import { cn } from '~/lib/utils';
 
-const navLinks = [
-  { label: 'Services', href: '/#services' },
-  { label: 'Work', href: '/work' },
-  { label: 'Process', href: '/#process' },
-  { label: 'About', href: '/#about' },
-  { label: 'Contact', href: '/#contact' },
-];
-
 export function Navbar() {
+  const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  const links = [
+    { label: t.nav.services, href: '/#services' },
+    { label: t.nav.work, href: '/work' },
+    { label: t.nav.process, href: '/#process' },
+    { label: t.nav.about, href: '/#about' },
+    { label: t.nav.contact, href: '/#contact' },
+  ];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [open]);
+
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        scrolled
-          ? 'bg-charcoal-900/95 backdrop-blur-md border-b border-white/8 py-3'
-          : 'bg-transparent py-5'
+        'fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,padding] duration-300',
+        scrolled || open ? 'border-b border-line bg-bg/85 py-3 backdrop-blur-md' : 'border-b border-transparent py-5',
       )}
     >
-      <nav className="max-w-6xl mx-auto px-6 md:px-8 flex items-center justify-between">
-        {/* Wordmark */}
-        <Link href="/" className="flex items-center gap-2 group" aria-label="Aureus Labs home">
-          <span className="w-7 h-7 rounded-lg bg-gold-500 flex items-center justify-center text-charcoal-900 font-bold text-sm select-none group-hover:bg-gold-400 transition-colors">
-            A
-          </span>
-          <span className="font-semibold text-cream-50 text-base tracking-tight">
-            Aureus<span className="text-gold-500">Labs</span>
-          </span>
+      <nav aria-label={t.a11y.mainNav} className="wrap flex items-center justify-between gap-4">
+        <Link href="/" aria-label={t.a11y.brandHome} className="shrink-0">
+          <Logo />
         </Link>
 
-        {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
+        <ul className="hidden items-center gap-1 lg:flex">
+          {links.map((link) => (
             <li key={link.href}>
               <Link
                 href={link.href}
-                className="px-3 py-2 text-sm text-cream-200/70 hover:text-cream-50 transition-colors rounded-lg hover:bg-white/6"
+                className="rounded-full px-3.5 py-2 text-sm text-muted transition-colors hover:bg-ink/5 hover:text-ink"
               >
                 {link.label}
               </Link>
@@ -58,54 +69,54 @@ export function Navbar() {
           ))}
         </ul>
 
-        {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <LanguageSwitcher />
+          <ThemeToggle />
           <Button
-            as="a"
-            href="mailto:ramadika305@gmail.com?subject=Project Inquiry"
-            variant="primary"
+            href={`mailto:${SITE.email}?subject=${encodeURIComponent(t.contact.form.mail.subject)}`}
             size="sm"
+            className="hidden lg:inline-flex"
           >
-            Start a Project
+            {t.nav.cta}
           </Button>
+          <button
+            ref={toggleRef}
+            type="button"
+            onClick={() => setOpen((value) => !value)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? t.a11y.menuClose : t.a11y.menuOpen}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-line text-ink transition-colors hover:bg-ink/5 lg:hidden"
+          >
+            {open ? <X size={16} aria-hidden="true" /> : <Menu size={16} aria-hidden="true" />}
+          </button>
         </div>
-
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setMobileOpen((v) => !v)}
-          className="md:hidden p-2 rounded-lg text-cream-200 hover:bg-white/8 transition-colors"
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
       </nav>
 
-      {/* Mobile drawer */}
-      {mobileOpen && (
-        <div className="md:hidden bg-charcoal-900/98 backdrop-blur-md border-t border-white/8 px-6 py-4 flex flex-col gap-1">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="px-3 py-3 text-sm text-cream-200/70 hover:text-cream-50 transition-colors rounded-lg hover:bg-white/6"
-            >
-              {link.label}
-            </Link>
+      <div id="mobile-menu" hidden={!open} className="wrap lg:hidden">
+        <ul className="flex flex-col gap-1 py-4">
+          {links.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className="block rounded-xl px-3 py-3 font-display text-2xl text-ink transition-colors hover:bg-ink/5"
+              >
+                {link.label}
+              </Link>
+            </li>
           ))}
-          <div className="mt-3 pt-3 border-t border-white/8">
+          <li className="pt-3">
             <Button
-              as="a"
-              href="mailto:ramadika305@gmail.com?subject=Project Inquiry"
-              variant="primary"
-              size="md"
-              className="w-full justify-center"
+              href={`mailto:${SITE.email}?subject=${encodeURIComponent(t.contact.form.mail.subject)}`}
+              size="lg"
+              className="w-full"
             >
-              Start a Project
+              {t.nav.cta}
             </Button>
-          </div>
-        </div>
-      )}
+          </li>
+        </ul>
+      </div>
     </header>
   );
 }

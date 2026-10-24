@@ -1,32 +1,32 @@
+import { cn } from '~/lib/utils';
+
 interface BrowserFrameProps {
+  url: string;
   children: React.ReactNode;
-  accent?: string;
-  url?: string;
+  className?: string;
 }
 
-export function BrowserFrame({ children, accent = '#c9a84c', url = 'aureuslabs.dev' }: BrowserFrameProps) {
+export function BrowserFrame({ url, children, className }: BrowserFrameProps) {
   return (
-    <div className="rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-charcoal-800">
-      {/* Title bar */}
-      <div className="flex items-center gap-2 px-3 py-2.5 bg-charcoal-700/80 border-b border-white/8">
+    <div
+      className={cn(
+        'overflow-hidden rounded-xl border border-line bg-surface shadow-[0_28px_60px_-34px_rgb(0_0_0/0.45)]',
+        className,
+      )}
+      aria-hidden="true"
+    >
+      <div className="flex items-center gap-3 border-b border-line bg-surface-2 px-3.5 py-2.5">
         <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-white/15" />
-          <div className="w-2.5 h-2.5 rounded-full bg-white/15" />
-          <div className="w-2.5 h-2.5 rounded-full bg-white/15" />
+          <span className="h-2 w-2 rounded-full bg-ink/20" />
+          <span className="h-2 w-2 rounded-full bg-ink/20" />
+          <span className="h-2 w-2 rounded-full bg-ink/20" />
         </div>
-        <div className="flex-1 flex justify-center">
-          <div
-            className="px-4 py-0.5 rounded-full bg-charcoal-900/60 border border-white/8 text-2xs text-cream-200/40 font-mono"
-          >
-            {url}
-          </div>
+        <div className="mx-auto max-w-[70%] flex-1 truncate rounded-md bg-bg px-3 py-1 text-center font-mono text-2xs text-muted">
+          {url}
         </div>
-        <div className="w-10" />
+        <span className="w-9" />
       </div>
-      {/* Content */}
-      <div style={{ borderTop: `2px solid ${accent}22` }}>
-        {children}
-      </div>
+      <div className="aspect-[16/10] w-full [container-type:inline-size]">{children}</div>
     </div>
   );
 }

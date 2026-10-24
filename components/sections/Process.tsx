@@ -1,73 +1,40 @@
-import { Search, Paintbrush, Code2, Rocket } from 'lucide-react';
-import { SectionHeading } from '~/components/ui/SectionHeading';
+'use client';
 
-const steps = [
-  {
-    number: '01',
-    icon: Search,
-    title: 'Discover',
-    description:
-      'We start by understanding your business, your audience, and your goals. No templates, no guessing — just focused questions that lead to better output.',
-  },
-  {
-    number: '02',
-    icon: Paintbrush,
-    title: 'Design',
-    description:
-      'High-fidelity mockups before a line of code. You review the visual direction, provide feedback, and approve before we build.',
-  },
-  {
-    number: '03',
-    icon: Code2,
-    title: 'Build',
-    description:
-      'Clean, semantic, fast. Built with modern tooling, optimised for performance, and structured so it\'s maintainable long-term.',
-  },
-  {
-    number: '04',
-    icon: Rocket,
-    title: 'Launch',
-    description:
-      'Deployment to your hosting, domain setup, and a handoff package so you\'re never dependent on us for routine updates.',
-  },
-];
+import { Code2, Paintbrush, Rocket, Search, type LucideIcon } from 'lucide-react';
+import { Reveal } from '~/components/ui/Reveal';
+import { SectionHeading } from '~/components/ui/SectionHeading';
+import { useLanguage } from '~/lib/i18n/LanguageProvider';
+
+const icons: LucideIcon[] = [Search, Paintbrush, Code2, Rocket];
 
 export function Process() {
+  const { t } = useLanguage();
+
   return (
-    <section id="process" className="section">
-      <div className="container">
-        <SectionHeading
-          eyebrow="How it works"
-          title="From brief to live in weeks, not months"
-          subtitle="A focused four-stage process designed to minimise back-and-forth and maximise the quality of the final result."
-        />
+    <section id="process" className="section border-t border-line bg-surface">
+      <div className="wrap">
+        <Reveal>
+          <SectionHeading index="04" eyebrow={t.process.eyebrow} title={t.process.title} subtitle={t.process.subtitle} />
+        </Reveal>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {steps.map((step, i) => {
-            const Icon = step.icon;
+        <ol className="mt-20 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          {t.process.steps.map((step, i) => {
+            const Icon = icons[i];
             return (
-              <div key={step.number} className="relative">
-                {/* Connector line */}
-                {i < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-6 left-[calc(100%+10px)] w-[calc(100%-20px)] h-px bg-gradient-to-r from-white/10 to-transparent z-0" />
-                )}
-
-                <div className="card p-6 flex flex-col gap-4 relative z-10 h-full">
+              <li key={step.title}>
+                <Reveal delay={i * 90} className="relative h-full border-t border-ink/70 pt-7">
+                  <span aria-hidden="true" className="absolute -top-[5px] left-0 h-[9px] w-[9px] rounded-full bg-accent" />
                   <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center">
-                      <Icon size={16} className="text-gold-500" />
-                    </div>
-                    <span className="text-2xl font-bold text-white/8 font-mono">{step.number}</span>
+                    <span className="font-mono text-sm text-accent">{String(i + 1).padStart(2, '0')}</span>
+                    <Icon size={18} aria-hidden="true" className="text-muted" />
                   </div>
-                  <div>
-                    <h3 className="text-base font-semibold text-cream-50 mb-2">{step.title}</h3>
-                    <p className="text-sm text-cream-200/50 leading-relaxed">{step.description}</p>
-                  </div>
-                </div>
-              </div>
+                  <h3 className="mt-6 font-display text-3xl leading-tight text-ink">{step.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-muted">{step.description}</p>
+                </Reveal>
+              </li>
             );
           })}
-        </div>
+        </ol>
       </div>
     </section>
   );
